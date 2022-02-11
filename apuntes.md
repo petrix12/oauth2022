@@ -41,18 +41,90 @@
 ## Sección 2: Laravel Socialite y login vía Facebook
 ### 6. ¿Por qué decimos OAuth 2 y no 1?
 3 min
+
 ### 7. Configuración del entorno
-7 min
+1. Crear proyecto Laravel con Laragon y nombrarlo **monitor**.
+
 ### 8. Sistema de autenticación
-5 min
+1. Crear sistema de autenticación:
+    + $ composer require laravel/ui
+    + $ php artisan ui vue --auth
+2. Verificar valores de las variable de entorno en **.env**.
+3. Anexar CDN de Bootstrap en **resources\views\layouts\app.blade.php**.
+4. Ejecutar ajustes finales:
+    + $ npm install
+    + $ npm run dev
+    + $ php artisan migrate
+
 ### 9. Instalación y registro en Facebook for Devs
-8 min
+1. Instalar dependencia de Laravel Socialite:
+    + $ composer require laravel/socialite
+2. Ingresar en la página para Desarrolladores de [Facebook](https://developers.facebook.com/?locale=es_ES):
+    1. Ir a Mis Aplicaciones y crear una nueva.
+    2. Selecciona un tipo de app: Ninguno.
+    3. Nombre para mostrar: Monitor de precios
+    4. Correo electrónico de contacto de la app: bazo.pedro@gmail.com
+    **Nota 1**: al culminar estos pasos obtenemos las credenciales de la aplicación en **Configuración > Básica**:
+       + Identificador de la app: ****** (FACEBOOK_CLIENT_ID)
+       + Clave secreta de la app: ****** (FACEBOOK_CLIENT_SECRET)
+    + **Nota 2**: para terminar de configurar el sitio, seguir los pasos indicados en: **Sección 3: Actualización Laravel 8**.
+3. Modificar archivo de configuración **config\services.php** para añadir las credenciales de facebook:
+    ```php
+    <?php
+
+    return [
+
+        ≡
+
+        'facebook' => [
+            'client_id' => env('FACEBOOK_CLIENT_ID'),
+            'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+            'redirect' => env('FACEBOOK_REDIRECT_URL'),
+        ],
+
+    ];
+    ```
+4. Modificar archivo de variables de entorno **.env** para añadir las credenciales de facebook:
+    ```env
+    ≡
+    FACEBOOK_CLIENT_ID=*********
+    FACEBOOK_CLIENT_SECRET=**********
+    FACEBOOK_REDIRECT_URL="https://oauth2022.test/facebook/auth/callback"
+    ``` 
+
 ### 10. Rutas para gestionar el login vía OAuth
-7 min
+1. Modificar archivo de rutas **routes\web.php**:
+    ```php
+    ```
+2. mmmm
+
+
+
+
+    ≡
+    ```php
+    ```
+
 ### 11. Importancia de HTTPS
-4 min
++ **Nota**: porque debemos utilizar https.
+
 ### 12. Cómo activar HTTPS de forma local
-13 min
++ https://forum.laragon.org/topic/106/laragon-and-let-s-encrypt/3
+1. Ir a Laragon y activar SSL en **Menú > Apache > SSL > Habilitar**.
+    + **Nota**: esta acción generará:
+        + Un certificado: **C:\laragon\etc\ssl\laragon.crt**
+        + Una key: **C:\laragon\etc\ssl\laragon.key**
+        + Una ruta con protocolo https para el proyecto en: **C:\laragon\etc\apache2\sites-enabled\auto.oauth2022.test.conf**.
+2. Reiniciar apache.
+3. En el navegador Chrome ir a **Configuración > Seguridad y privacidad > Configuración avanzada > Gestionar certificados**.
+4. Importar el certificado **C:\laragon\etc\ssl\laragon.crt**.
+    1. Clic en **Siguiente**.
+    2. En **Almacén de certifacado** seleccionar: **Entidades de certificación raíz de confianza**.
+    3. Clic en **Siguiente**.
+    4. Reiniciar Chrome.
+5. Reconfigurar varible de entorno **FACEBOOK_REDIRECT_URL** en **.env**:
+6. mmm
+
 ### 13. Autorización y callback vía Facebook
 3 min
 ### 14. Primer registro e inicio de sesión exitoso
@@ -61,10 +133,171 @@
 9 min
 ### 16. Íconos y botones de login adicionales
 10 min
+
+### Commit en GitHub
++ $ git add .
++ $ git commit -m "Laravel Socialite y login vía Facebook"
++ $ git push -u origin main
+
+
+## Sección 3: Actualización Laravel 8
 ### 17. Facebook Login y Laravel UI
-17 min
++ https://socialiteproviders.com/about
+1. Crear proyecto Laravel con Laragon y nombrarlo **monitor2**.
+2. Instalar dependencia de Laravel Socialite:
+    + $ composer require laravel/socialite
+3. Modificar archivo de configuración **config\services.php** para añadir las credenciales de facebook:
+    ```php
+    <?php
+
+    return [
+
+        ≡
+
+        'facebook' => [
+            'client_id' => env('FACEBOOK_CLIENT_ID'),
+            'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+            'redirect' => env('FACEBOOK_REDIRECT_URL'),
+        ],
+
+    ];
+    ```
+4. Crear base de datos **monitor2** en MySQL.
+5. Crear sistema de autenticación:
+    + $ composer require laravel/ui
+    + $ php artisan ui bootstrap --auth
+6. Verificar valores de las variable de entorno en **.env**.
+7. Ejecutar ajustes finales:
+    + $ npm install
+    + $ npm run dev
+    + $ php artisan migrate
+8.  Crear controlador **FacebookLonginController**:
+    + $ php artisan make:controller Auth\FacebookLonginController
+9.  Programar controlador **app\Http\Controllers\Auth\FacebookLonginController.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Controllers\Auth;
+
+    use App\Http\Controllers\Controller;
+    use Illuminate\Http\Request;
+    use Laravel\Socialite\Facades\Socialite;
+
+    class FacebookLonginController extends Controller
+    {
+        public function login(){
+            return Socialite::driver('facebook')->redirect();
+        }
+
+        public function loginWithFacebook(){
+            dd(Socialite::driver('facebook')->user());
+        }
+    }
+    ```
+10. Modificar la vista **resources\views\auth\login.blade.php**:
+    ```php
+    ≡
+    <div class="row mb-0">
+        <div class="col-md-8 offset-md-4">
+            <button type="submit" class="btn btn-primary">
+                {{ __('Login') }}
+            </button>
+
+            <a href="{{ route('login.facebook') }}" class="btn btn-primary">
+                Ingresar por facebook
+            </a>
+
+            @if (Route::has('password.request'))
+                <a class="btn btn-link" href="{{ route('password.request') }}">
+                    {{ __('Forgot Your Password?') }}
+                </a>
+            @endif
+        </div>
+    </div>
+    ≡
+    ```
+11. Modificar archivo de rutas **routes\web.php** para agregar las rutas para login con facebook:
+    ```php
+    <?php
+
+    use Illuminate\Support\Facades\Route;
+
+    Route::get('/', function () {
+        return view('welcome');
+    });
+
+    Auth::routes();
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    // Rutas para login con facebook
+    Route::get('login/facebook', [App\Http\Controllers\Auth\FacebookLonginController::class, 'login'])
+        ->name('login.facebook');
+    Route::get('facebook/auth/callback', [App\Http\Controllers\Auth\FacebookLonginController::class, 'loginWithFacebook']);
+    ```
+12. Ingresar en la página para Desarrolladores de [Facebook](https://developers.facebook.com/?locale=es_ES):
+    1. Ir a Mis Aplicaciones y crear una nueva.
+    2. Selecciona un tipo de app: Ninguno.
+    3. Nombre para mostrar: Monitor de precios
+    4. Correo electrónico de contacto de la app: bazo.pedro@gmail.com
+    **Nota**: al culminar estos pasos obtenemos las credenciales de la aplicación en **Configuración > Básica**:
+       + Identificador de la app: ****** (FACEBOOK_CLIENT_ID)
+       + Clave secreta de la app: ****** (FACEBOOK_CLIENT_SECRET)
+       + Dominios de la app: https://oauth2022.test/
+       + Ir al final de la configuración básica y dar clic en **+ Agregar plataforma** y seleccionar **Website**.
+       + En el nuevo apartado de **Sitio web** icluir en **URL del sitio**: https://oauth2022.test/
+       + Presionar el botón **Guardar cambios**.
+    1. Presionar en **Configuración** en la tarjeta **Inicio de sesión con Facebook**.
+    2. Seleccionar **www**.
+    3. Ir a Productos > Inicio de sesión con facebook > Configuración
+       + URI de redireccionamiento de OAuth válidos: https://oauth2022.test/facebook/auth/callback
+    4. Ir a **Configuración > Avanzada > Administrador de dominios** y dar clic en **Agragar dominio**:
+       + Ingresa la URL: **https://oauth2022.test/**
+       + Seleccionar: **Coincidencia exacta**.
+       + Seleccionar: **HTML** y **JavaScript y CSS**.
+       + Clic en **Aplicar**.
+13. Configurar variables de entorno en **.env**:
+    ```env
+    APP_NAME=Monitor
+    ≡
+    APP_URL=https://oauth2022.test/
+    SESSION_DOMAIN=oauth2022.test
+
+    ≡
+
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=monitor2
+    DB_USERNAME=root
+    DB_PASSWORD=
+
+    ≡
+
+    FACEBOOK_CLIENT_ID=*************
+    FACEBOOK_CLIENT_SECRET=************
+    FACEBOOK_REDIRECT_URL="https://oauth2022.test/facebook/auth/callback"
+    ```
+
++ **Nota**: en caso de ser necesario limpiar la cache:
+    + $ php artisan config:cache
+
+### Commit en GitHub
++ $ git add .
++ $ git commit -m "Actualización Laravel 8"
++ $ git push -u origin main
+
+
+## Sección 4: Más proveedores de OAuth 2
 ### 18. Registro de app en Twitter
 5 min
+
+
+    ≡
+    ```php
+    ```
+
+
 ### 19. Registro de app en Google+
 7 min
 ### 20. Nuevas rutas para los nuevos proveedores
