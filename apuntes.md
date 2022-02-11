@@ -255,7 +255,76 @@
     ```
 
 ### 15. Mostrar avatar (imagen de perfil)
-9 min
+1. Añadir campos a la migración **database\migrations\2014_10_12_000000_create_users_table.php**:
+    ```php
+    ≡
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+
+        $table->string('facebook_id')->nullable();
+        $table->string('avatar')->nullable();
+        $table->string('nick')->nullable();
+
+        $table->rememberToken();
+        $table->timestamps();
+    });
+    ≡
+    ```
+2. Reestablecer base de datos:
+    + $ php artisan migrate:fresh
+3. Modificar el método **loginWithFacebook** del controlador **app\Http\Controllers\Auth\FacebookLonginController.php**:
+    ```php
+    public function loginWithFacebook(){
+        $userFacebook = Socialite::driver('facebook')->user();
+
+        $user = User::where('email', $userFacebook->getEmail())->first();
+
+        if(!$user){
+            $user = User::create([
+                'name' => $userFacebook->getName(),
+                'email' => $userFacebook->getEmail(),
+                'password' => '',
+                'facebook_id' => $userFacebook->getId(),
+                'avatar'  => $userFacebook->getAvatar(),
+                'nick'  => $userFacebook->getNickname()
+            ]);
+        }
+
+        auth()->login($user);
+        return redirect()->route('home');
+    }
+    ```
+4. Modificar la asignación masiva en el modelo **app\Models\User.php**:
+    ```php
+    ≡
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'facebook_id',
+        'avatar',
+        'nick'
+    ];
+    ≡
+    ```
+5. Modificar vista **resources\views\layouts\app.blade.php**:
+    ```php
+    ≡
+    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+        @if (Auth::user()->avatar)
+            <img src="{{ Auth::user()->avatar }}" alt="Avatar" helght="28">
+        @endif
+        {{ Auth::user()->name }}
+    </a>
+    ≡
+    ```
+
+### 16. Íconos y botones de login adicionales
+10 min
 
 
 
@@ -267,8 +336,6 @@
 
 
 
-### 16. Íconos y botones de login adicionales
-10 min
 
 ### Commit en GitHub
 + $ git add .

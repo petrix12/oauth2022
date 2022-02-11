@@ -13,10 +13,6 @@ class FacebookLonginController extends Controller
         return Socialite::driver('facebook')->redirect();
     }
 
-    /* public function callback(){
-        return Socialite::driver('facebook')->redirect();
-    } */
-
     public function loginWithFacebook(){
         $userFacebook = Socialite::driver('facebook')->user();
 
@@ -27,16 +23,11 @@ class FacebookLonginController extends Controller
                 'name' => $userFacebook->getName(),
                 'email' => $userFacebook->getEmail(),
                 'password' => '',
+                'facebook_id' => $userFacebook->getId(),
+                'avatar'  => $userFacebook->getAvatar(),
+                'nick'  => $userFacebook->getNickname()
             ]);
         }
-
-        /*
-        $user->getId();
-        $user->getNickname();
-        $user->getName();
-        $user->getEmail();
-        $user->getAvatar(); 
-        */
 
         auth()->login($user);
         return redirect()->route('home');
