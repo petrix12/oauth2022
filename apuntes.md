@@ -96,13 +96,28 @@
 1. Modificar archivo de rutas **routes\web.php**:
     ```php
     ```
-2. mmmm
-
-
-
-
-    ≡
+2.  Crear controlador **FacebookLonginController**:
+    + $ php artisan make:controller Auth\FacebookLonginController
+3.  Programar controlador **app\Http\Controllers\Auth\FacebookLonginController.php**:
     ```php
+    <?php
+
+    namespace App\Http\Controllers\Auth;
+
+    use App\Http\Controllers\Controller;
+    use Illuminate\Http\Request;
+    use Laravel\Socialite\Facades\Socialite;
+
+    class FacebookLonginController extends Controller
+    {
+        public function login(){
+            return Socialite::driver('facebook')->redirect();
+        }
+
+        public function loginWithFacebook(){
+            dd(Socialite::driver('facebook')->user());
+        }
+    }
     ```
 
 ### 11. Importancia de HTTPS
@@ -123,14 +138,135 @@
     3. Clic en **Siguiente**.
     4. Reiniciar Chrome.
 5. Reconfigurar varible de entorno **FACEBOOK_REDIRECT_URL** en **.env**:
-6. mmm
 
 ### 13. Autorización y callback vía Facebook
 3 min
+
 ### 14. Primer registro e inicio de sesión exitoso
-22 min
+1. Modificar plantilla **resources\views\layouts\app.blade.php**:
+    ```php
+    ≡
+    <!-- Authentication Links -->
+    @guest
+        @if (Route::has('login'))
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('login') }}">
+                    Inicio
+                </a>
+            </li>
+        @endif
+    @else
+    ≡
+    ```
+2. Modificar vista **resources\views\auth\login.blade.php**:
+    ```php
+    ≡
+    <div class="card">
+        <div class="card-header">Inicio de sesión</div>
+
+        <div class="card-body">
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <div class="row mb-3">
+                    <label for="email" class="col-md-4 col-form-label text-md-end">
+                        Correo electrónico
+                    </label>
+
+                    <div class="col-md-6">
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+
+                        @error('email')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="password" class="col-md-4 col-form-label text-md-end">
+                        Contraseña
+                    </label>
+
+                    <div class="col-md-6">
+                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+
+                        @error('password')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 offset-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+
+                            <label class="form-check-label" for="remember">
+                                Recordar sesión
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-0">
+                    <div class="col-md-8 offset-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Ingresar
+                        </button>
+
+                        <a href="{{ route('login.facebook') }}" class="btn btn-info">
+                            Ingresar por facebook
+                        </a>
+
+                        @if (Route::has('password.request'))
+                            <a class="btn btn-link" href="{{ route('password.request') }}">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    ≡
+    ```
+3. Modificar el método **loginWithFacebook** del controlador **app\Http\Controllers\Auth\FacebookLonginController.php**:
+    ```php
+    public function loginWithFacebook(){
+        $userFacebook = Socialite::driver('facebook')->user();
+
+        $user = User::where('email', $userFacebook->getEmail())->first();
+
+        if(!$user){
+            $user = User::create([
+                'name' => $userFacebook->getName(),
+                'email' => $userFacebook->getEmail(),
+                'password' => '',
+            ]);
+        }
+
+        auth()->login($user);
+        return redirect()->route('home');
+    }
+    ```
+
 ### 15. Mostrar avatar (imagen de perfil)
 9 min
+
+
+
+
+
+    ≡
+    ```php
+    ```
+
+
+
 ### 16. Íconos y botones de login adicionales
 10 min
 
