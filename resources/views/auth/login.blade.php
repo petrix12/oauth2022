@@ -8,7 +8,7 @@
                 <div class="card-header">Inicio de sesión</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}" class="mb-2">
                         @csrf
 
                         <div class="row mb-3">
@@ -57,13 +57,9 @@
 
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-secondary">
                                     Ingresar
                                 </button>
-
-                                <a href="{{ route('login.facebook') }}" class="btn btn-info">
-                                    Ingresar por facebook
-                                </a>
 
                                 @if (Route::has('password.request'))
                                     <a class="btn btn-link" href="{{ route('password.request') }}">
@@ -73,6 +69,26 @@
                             </div>
                         </div>
                     </form>
+
+                    <a href="{{ route('login.facebook') }}" class="btn btn-primary btn-block">
+                        <i class="fa-brands fa-facebook-square"></i>
+                        Ingresar por facebook
+                    </a>
+
+                    <a href="{{ route('login.facebook') }}" class="btn btn-info btn-block">
+                        <i class="fa-brands fa-twitter"></i>
+                        Ingresar por Twitter
+                    </a>
+
+                    <a href="{{ route('login.facebook') }}" class="btn btn-danger btn-block">
+                        <i class="fa-brands fa-google"></i>
+                        Ingresar por Google
+                    </a>
+
+                    <a href="{{ route('login.facebook') }}" class="btn btn-dark btn-block">
+                        <i class="fa-solid fa-envelope"></i>
+                        Registro mediante correo
+                    </a>
                 </div>
             </div>
         </div>
