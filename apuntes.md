@@ -772,35 +772,55 @@ Contenido Desactualizado
 
 ## Sección 5: Monitor de precios
 ### 29. Mockups y planteamiento inicial
-6 min
+Contenido Desactualizado
+
 ### 30. Gestión de ubicaciones
-18 min
+Contenido Desactualizado
+
 ### 31. Gestión de ítems
-20 min
+Contenido Desactualizado
+
 ### 32. Middleware y Roles de usuario
-13 min
+Contenido Desactualizado
+
 ### 33. Dropdown: Enlaces según rol
-3 min
+Contenido Desactualizado
+
 ### 34. Cargar valores de ítems (diseño)
-9 min
+Contenido Desactualizado
+
 ### 35. Cargar valores de ítems (funcionalidad)
-13 min
+Contenido Desactualizado
+
 ### 36. Relaciones entre modelos
-10 min
+Contenido Desactualizado
+
 ### 37. Monitor: Listar, paginar y filtrar ítems
-15 min
+Contenido Desactualizado
+
 ### 38. Monitor: Valor más bajo registrado
-5 min
+Contenido Desactualizado
+
 ### 39. Monitor: Mostrar detalles (valores cargados)
-11 min
+Contenido Desactualizado
+
 ### 40. Monitor: Eliminar valores cargados (admin)
-4 min
+Contenido Desactualizado
+
 ### 41. Eliminación lógica (Items y Locations)
-10 min
+Contenido Desactualizado
+
 ### 42. Relaciones considerando SoftDeletes
-3 min
+Contenido Desactualizado
+
 ### 43. Exportar detalles (generar descarga XLSX)
 + https://laravel-excel.com
++ https://github.com/SpartnerNL/Laravel-Excel
+
+### Commit en GitHub
++ $ git add .
++ $ git commit -m "Monitor de precios"
++ $ git push -u origin main
 
 
 ### 44. Eliminación condicionada (física y lógica)
