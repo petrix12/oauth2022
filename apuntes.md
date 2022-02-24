@@ -95,6 +95,11 @@
 ### 10. Rutas para gestionar el login vía OAuth
 1. Modificar archivo de rutas **routes\web.php**:
     ```php
+    ≡
+    // Rutas para login con facebook
+    Route::get('login/facebook', [App\Http\Controllers\Auth\FacebookLonginController::class, 'login'])
+        ->name('login.facebook');
+    Route::get('facebook/auth/callback', [App\Http\Controllers\Auth\FacebookLonginController::class, 'loginWithFacebook']);
     ```
 2.  Crear controlador **FacebookLonginController**:
     + $ php artisan make:controller Auth\FacebookLonginController
@@ -266,6 +271,8 @@
         $table->string('password');
 
         $table->string('facebook_id')->nullable();
+        $table->string('twitter_id')->nullable();
+        $table->string('google_id')->nullable();
         $table->string('avatar')->nullable();
         $table->string('nick')->nullable();
 
@@ -306,6 +313,8 @@
         'email',
         'password',
         'facebook_id',
+        'twitter_id',
+        'google_id',
         'avatar',
         'nick'
     ];
@@ -451,17 +460,17 @@
                             Ingresar por facebook
                         </a>
 
-                        <a href="{{ route('login.facebook') }}" class="btn btn-info btn-block">
+                        <a href="{{ route('login.twitter') }}" class="btn btn-info btn-block">
                             <i class="fa-brands fa-twitter"></i>
                             Ingresar por Twitter
                         </a>
 
-                        <a href="{{ route('login.facebook') }}" class="btn btn-danger btn-block">
+                        <a href="#" class="btn btn-danger btn-block">
                             <i class="fa-brands fa-google"></i>
                             Ingresar por Google
                         </a>
 
-                        <a href="{{ route('login.facebook') }}" class="btn btn-dark btn-block">
+                        <a href="#" class="btn btn-dark btn-block">
                             <i class="fa-solid fa-envelope"></i>
                             Registro mediante correo
                         </a>
@@ -638,34 +647,130 @@
 
 ## Sección 4: Más proveedores de OAuth 2
 ### 18. Registro de app en Twitter
-5 min
-
-
-    ≡
+1. Ir a la [plataforma para desarrolladores de Twitter](https://developer.twitter.com) y hacer login.
+2. Clic en **+ Create Project**:
+    + Project name: Monitor de precios
+    + App name: Monitor11639
+    + Obtener **API Key**, **API Key Secret** y **Bearer Token**:
+        + API Key: **********************
+        + API Key Secret: **********************
+        + Bearer Token: **********************
+    + User authentication settings: OAuth 2
+    + Type of App: Web App
+    + Callback URI: https://oauth2022.test/twitter/auth/callback
+    + Website URL: https://oauth2022.test
+    + Obtener OAuth 2.0 Client ID and Client Secret:
+        + Client ID: **********************
+        + Client Secret: **********************
+3. En local modificar el archivo de configuración **config\services.php**:
     ```php
+    <?php
+
+    return [
+
+        ≡
+
+        'twitter' => [
+            'client_id' => env('TWITTER_CLIENT_ID'),
+            'client_secret' => env('TWITTER_CLIENT_SECRET'),
+            'redirect' => env('TWITTER_REDIRECT_URL'),
+        ],
+
+    ];
+    ```
+4. Agregar variables de entorno para Twitter en **.env**:
+    ```env
+    TWITTER_CLIENT_ID=*****************
+    TWITTER_CLIENT_SECRET=***********************
+    TWITTER_REDIRECT_URL="https://oauth2022.test/twiiter/auth/callback"
     ```
 
-
 ### 19. Registro de app en Google+
-7 min
++ **Nota**: el proveedor Google+ ya no presta servicios.
+1. Ir a la página de [Google Cloud Platform](https://console.cloud.google.com/cloud-resource-manager).
+2. Crear un nuevo proyecto: Monitor de precios
+
 ### 20. Nuevas rutas para los nuevos proveedores
-12 min
+1.  Crear controlador **TwitterLonginController**:
+    + $ php artisan make:controller Auth\TwitterLonginController
+2. Modificar archivo de rutas **routes\web.php**:
+    ```php
+    ≡
+    // Rutas para login con twitter
+    Route::get('login/twitter', [App\Http\Controllers\Auth\TwitterLonginController::class, 'login'])
+        ->name('login.twitter');
+    Route::get('twitter/auth/callback', [App\Http\Controllers\Auth\TwitterLonginController::class, 'loginWithTwitter']);
+    ```
+3.  Programar controlador **app\Http\Controllers\Auth\TwitterLonginController.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Controllers\Auth;
+
+    use App\Http\Controllers\Controller;
+    use App\Models\User;
+    use Illuminate\Http\Request;
+    use Laravel\Socialite\Facades\Socialite;
+
+    class TwitterLonginController extends Controller
+    {
+        public function login(){
+            return Socialite::driver('twitter')->redirect();
+        }
+
+        public function loginWithTwitter(){
+            $userTwitter = Socialite::driver('twitter')->user();
+
+            $user = User::where('email', $userTwitter->getEmail())->first();
+
+            if(!$user){
+                $user = User::create([
+                    'name' => $userTwitter->getName(),
+                    'email' => $userTwitter->getEmail(),
+                    'password' => '',
+                    'twitter_id' => $userTwitter->getId(),
+                    'avatar'  => $userTwitter->getAvatar(),
+                    'nick'  => $userTwitter->getNickname()
+                ]);
+            }
+
+            auth()->login($user);
+            return redirect()->route('home');
+        }
+    }
+    ```
+
 ### 21. Evitar fallo por email con valor null
-4 min
+Contenido Desactualizado
+
 ### 22. Evitar fallo por dominio no admitido
-9 min
+Contenido Desactualizado
+
 ### 23. Actualizando URL de callback (Twitter y Fb)
-5 min
+Contenido Desactualizado
+
 ### 24. Solicitando email en Twitter
-5 min
+Contenido Desactualizado
+
 ### 25. Actualizando datos en el inicio de sesión
-7 min
+Contenido Desactualizado
+
 ### 26. Detalles a tener en cuenta sobre el email
-14 min
+Contenido Desactualizado
+
 ### 27. Refactorización de código
-9 min
+Contenido Desactualizado
+
 ### 28. Íconos para nuestra aplicación cliente
-4 min
+Contenido Desactualizado
+
+### Commit en GitHub
++ $ git add .
++ $ git commit -m "Más proveedores de OAuth 2"
++ $ git push -u origin main
+
+
+## Sección 5: Monitor de precios
 ### 29. Mockups y planteamiento inicial
 6 min
 ### 30. Gestión de ubicaciones
@@ -695,7 +800,9 @@
 ### 42. Relaciones considerando SoftDeletes
 3 min
 ### 43. Exportar detalles (generar descarga XLSX)
-26 min
++ https://laravel-excel.com
+
+
 ### 44. Eliminación condicionada (física y lógica)
 7 min
 ### 45. Edición de ubicaciones e ítems
@@ -703,6 +810,12 @@
 ### 46. Select con búsqueda
 16 min
 
+
+
+
+    ≡
+    ```php
+    ```
 
 
 DroidCam OBS

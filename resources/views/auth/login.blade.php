@@ -75,7 +75,7 @@
                         Ingresar por facebook
                     </a>
 
-                    <a href="{{ route('login.facebook') }}" class="btn btn-info btn-block">
+                    <a href="{{ route('login.twitter') }}" class="btn btn-info btn-block">
                         <i class="fa-brands fa-twitter"></i>
                         Ingresar por Twitter
                     </a>
